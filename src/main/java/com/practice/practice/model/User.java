@@ -1,0 +1,36 @@
+
+package com.practice.practice.model;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+
+@Entity
+public class User {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+
+    private Long id;
+    private String name;
+    private int age;
+    private String email;
+
+    public User() {}
+
+    public User(String name,int age, String email){
+        this.name=name;
+        this.age=age;
+        this.email=email;
+    }
+    public Long getId(){return id;}
+
+    public String getName(){return name;}
+    public String setName(String name){return this.name=name;}
+
+    public int getAge(){return age;}
+    public int setAge(int age){return this.age=age;}
+
+    public String getEmail(){return email;}
+    public String setEmail(String email){return this.email=email;}
+}
