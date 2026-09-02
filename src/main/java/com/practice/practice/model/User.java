@@ -5,8 +5,10 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 @Entity
+@Table(name = "users")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,11 +28,11 @@ public class User {
     public Long getId(){return id;}
 
     public String getName(){return name;}
-    public String setName(String name){return this.name=name;}
+    public void setName(String name){this.name=name;}
 
     public int getAge(){return age;}
-    public int setAge(int age){return this.age=age;}
+    public void setAge(int age){this.age=age;}
 
     public String getEmail(){return email;}
-    public String setEmail(String email){return this.email=email;}
+    public void setEmail(String email){this.email=email;}
 }
