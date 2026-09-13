@@ -2,51 +2,58 @@ package com.practice.practice.controller;
 
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.practice.practice.model.User;
+import com.practice.practice.dto.CreateUserRequest;
+import com.practice.practice.dto.UpdateUserRequest;
+import com.practice.practice.dto.UserResponse;
 import com.practice.practice.service.UserService;
 
-
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/users")
 public class UserController {
     private final UserService userService;
 
-    public UserController(UserService userService){
-        this.userService=userService;
+    public UserController(UserService userService) {
+        this.userService = userService;
     }
 
     @GetMapping
-    public List<User> getAllUsers() {
+    public List<UserResponse> getAllUsers() {
         return userService.getAllUsers();
     }
 
-    @PostMapping("/create")
-    public User createUser( @RequestParam String name, @RequestParam int age, @RequestParam String email
-    ) {
-        return userService.createUser(name, age, email);
+    @GetMapping("/{id}")
+    public ResponseEntity<UserResponse> getUserById(@PathVariable Long id) {
+        return ResponseEntity.ok(userService.getUserById(id));
+    }
+
+    @PostMapping
+    public ResponseEntity<UserResponse> createUser(@Valid @RequestBody CreateUserRequest request) {
+        UserResponse created = userService.createUser(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
     @PutMapping("/{id}")
-    public String editUser(@PathVariable String id, @RequestParam String name, @RequestParam int age, @RequestParam String email) {
-        userService.updateUser(Long.parseLong(id), name, age, email);
-        return "User updated successfully.";
+    public ResponseEntity<UserResponse> updateUser(@PathVariable Long id,
+            @Valid @RequestBody UpdateUserRequest request) {
+        return ResponseEntity.ok(userService.updateUser(id, request));
     }
 
     @DeleteMapping("/{id}")
-    public String deleteUser(@PathVariable Long id) {
-        // Implement the logic to delete a user by ID
-        return "User with ID " + id + " deleted successfully.";
+    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
+        userService.deleteUser(id);
+        return ResponseEntity.noContent().build();
     }
-
 
 }
