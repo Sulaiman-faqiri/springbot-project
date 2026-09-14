@@ -4,10 +4,11 @@ package com.practice.practice.repository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 import com.practice.practice.model.User;
 
-public interface UserRepository extends JpaRepository<User, Long> {
+public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificationExecutor<User> {
     // Look at that! By extending JpaRepository, you instantly get methods like:
     // .save() -> to insert data
     // .findAll() -> to get all rows
