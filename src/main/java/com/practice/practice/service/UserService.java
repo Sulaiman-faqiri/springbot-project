@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import com.practice.practice.dto.CreateUserRequest;
 import com.practice.practice.dto.UpdateUserRequest;
 import com.practice.practice.dto.UserResponse;
+import com.practice.practice.exception.EmailAlreadyExistException;
 import com.practice.practice.exception.UserNotFoundException;
 import com.practice.practice.model.User;
 import com.practice.practice.repository.UserRepository;
@@ -24,6 +25,9 @@ public class UserService {
     }
 
     public UserResponse createUser(CreateUserRequest request) {
+        if (userRepository.existsByEmail(request.email())) {
+            throw new EmailAlreadyExistException(request.email());
+        }
         User newUser = new User(request.name(), request.age(), request.email());
         User savedUser = userRepository.save(newUser);
         return UserResponse.fromEntity(savedUser);
@@ -36,6 +40,9 @@ public class UserService {
 
     public UserResponse updateUser(Long id, UpdateUserRequest request) {
         User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
+        if (userRepository.existsByEmailAndIdNot(request.email(),id)) {
+            throw new EmailAlreadyExistException(request.email());
+        }
         user.setName(request.name());
         user.setAge(request.age());
         user.setEmail(request.email());

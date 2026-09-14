@@ -10,4 +10,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     // .save() -> to insert data
     // .findAll() -> to get all rows
     // .findById() -> to find by ID
+    boolean existsByEmail(String email);
+    boolean existsByEmailAndIdNot(String email,Long id);
 }
