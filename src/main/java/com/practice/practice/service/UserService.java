@@ -1,7 +1,8 @@
 package com.practice.practice.service;
 
-import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.practice.practice.dto.CreateUserRequest;
@@ -12,17 +13,23 @@ import com.practice.practice.exception.ResourceNotFoundException;
 import com.practice.practice.model.User;
 import com.practice.practice.repository.UserRepository;
 
+import lombok.AllArgsConstructor;
+
+@AllArgsConstructor
 @Service
 public class UserService {
     private final UserRepository userRepository;
 
-    public UserService(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public Page<UserResponse> getAllUsers(String name,Pageable pageable) {
+        Page<User> users;
+        if(name==null||name.isBlank()){
+            users=userRepository.findAll(pageable);
+        }else{
+            users=userRepository.findByNameContainingIgnoreCase(name, pageable);
+        }
+        return users.map(UserResponse::fromEntity);
     }
-
-    public List<UserResponse> getAllUsers() {
-        return userRepository.findAll().stream().map(UserResponse::fromEntity).toList();
-    }
+   
 
     public UserResponse createUser(CreateUserRequest request) {
         if (userRepository.existsByEmail(request.email())) {
