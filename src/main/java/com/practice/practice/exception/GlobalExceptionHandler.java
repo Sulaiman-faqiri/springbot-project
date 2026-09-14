@@ -29,7 +29,7 @@ public class GlobalExceptionHandler {
     @Value("${app.errors.debug:false}")
     private boolean debugEnabled;
 
-    // Our own errors: UserNotFoundException, and any future ApiException
+    // Our own errors: ResourceNotFoundException, DuplicateResourceException, and any future ApiException
     @ExceptionHandler(ApiException.class)
     public ResponseEntity<ErrorResponse> handleApi(ApiException ex, HttpServletRequest req) {
         return build(ex.getStatus(), ex.getMessage(), null, ex, req);

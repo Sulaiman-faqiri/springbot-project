@@ -7,8 +7,8 @@ import org.springframework.stereotype.Service;
 import com.practice.practice.dto.CreateUserRequest;
 import com.practice.practice.dto.UpdateUserRequest;
 import com.practice.practice.dto.UserResponse;
-import com.practice.practice.exception.EmailAlreadyExistException;
-import com.practice.practice.exception.UserNotFoundException;
+import com.practice.practice.exception.DuplicateResourceException;
+import com.practice.practice.exception.ResourceNotFoundException;
 import com.practice.practice.model.User;
 import com.practice.practice.repository.UserRepository;
 
@@ -26,7 +26,7 @@ public class UserService {
 
     public UserResponse createUser(CreateUserRequest request) {
         if (userRepository.existsByEmail(request.email())) {
-            throw new EmailAlreadyExistException(request.email());
+            throw new DuplicateResourceException("User", "email", request.email());
         }
         User newUser = new User(request.name(), request.age(), request.email());
         User savedUser = userRepository.save(newUser);
@@ -34,14 +34,14 @@ public class UserService {
     }
 
     public UserResponse getUserById(Long id) {
-        User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
+        User user = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User", id));
         return UserResponse.fromEntity(user);
     }
 
     public UserResponse updateUser(Long id, UpdateUserRequest request) {
-        User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
-        if (userRepository.existsByEmailAndIdNot(request.email(),id)) {
-            throw new EmailAlreadyExistException(request.email());
+        User user = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User", id));
+        if (userRepository.existsByEmailAndIdNot(request.email(), id)) {
+            throw new DuplicateResourceException("User", "email", request.email());
         }
         user.setName(request.name());
         user.setAge(request.age());
@@ -52,7 +52,7 @@ public class UserService {
 
     public void deleteUser(Long id) {
         if (!userRepository.existsById(id)) {
-            throw new UserNotFoundException(id);
+            throw new ResourceNotFoundException("User", id);
         }
         userRepository.deleteById(id);
     }
