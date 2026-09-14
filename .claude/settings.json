@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(java -version)",
+      "PowerShell(echo $env:JAVA_HOME)",
+      "PowerShell(Test-NetConnection -ComputerName localhost -Port 3306 -InformationLevel Quiet -WarningAction SilentlyContinue)"
+    ]
+  }
+}
