@@ -24,7 +24,7 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
     @Query("""
             SELECT u from User u
              WHERE (:name IS NULL OR LOWER(u.name) LIKE LOWER(CONCAT('%',TRIM(:name),'%')))
-            AND (:email IS NULL OR LOWER(u.emal) LIKE LOWER(CONCAT('%',TRIM(:email),'%')))
+            AND (:email IS NULL OR LOWER(u.email) LIKE LOWER(CONCAT('%',TRIM(:email),'%')))
             AND (:minAge IS NULL OR u.age >= :minAge)
             """)
     Page<User> search(
