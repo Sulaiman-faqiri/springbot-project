@@ -1,11 +1,6 @@
 package com.practice.practice.service;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import com.practice.practice.dto.CreateUserRequest;
@@ -15,7 +10,6 @@ import com.practice.practice.exception.DuplicateResourceException;
 import com.practice.practice.exception.ResourceNotFoundException;
 import com.practice.practice.model.User;
 import com.practice.practice.repository.UserRepository;
-import com.practice.practice.specification.UserSpecs;
 
 import lombok.AllArgsConstructor;
 
@@ -24,12 +18,9 @@ import lombok.AllArgsConstructor;
 public class UserService {
     private final UserRepository userRepository;
 
-    public Page<UserResponse> getAllUsers(String name, Pageable pageable) {
-        List<Specification<User>> filters = new ArrayList<>();
-        if (name != null && !name.isBlank())
-            filters.add(UserSpecs.nameContains(name));
-        
-        return userRepository.findAll(Specification.allOf(filters), pageable).map(UserResponse::fromEntity);
+    public Page<UserResponse> getAllUsers(String name,String email,Integer minAge, Pageable pageable) {
+        return userRepository.search(name,email,minAge, pageable).map(UserResponse::fromEntity);
+
     }
 
     public UserResponse createUser(CreateUserRequest request) {

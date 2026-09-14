@@ -32,9 +32,11 @@ public class UserController {
     @GetMapping
     public Page<UserResponse> getAllUsers(
             @RequestParam(required = false) String name,
+            @RequestParam(required = false) String email,
+            @RequestParam(required = false) Integer minAge,
             @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.ASC) Pageable pageable) {
 
-        return userService.getAllUsers(name, pageable);
+        return userService.getAllUsers(name, email, minAge, pageable);
     }
 
     @GetMapping("/{id}")
