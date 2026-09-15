@@ -1,7 +1,8 @@
 package com.practice.practice.service;
 
-import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.practice.practice.dto.CreateAddressRequest;
@@ -17,8 +18,8 @@ import lombok.AllArgsConstructor;
 public class AddressService {
     private final AddressRespository addressRepository;
 
-    public List<Address> getAllAddresses() {
-        return addressRepository.findAll();
+    public Page<Address> getAllAddresses(Pageable pageable) {
+        return addressRepository.findAll(pageable);
     }
 
     public Address createAddress(CreateAddressRequest request) {
