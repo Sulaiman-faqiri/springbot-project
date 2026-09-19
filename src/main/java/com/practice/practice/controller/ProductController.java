@@ -35,6 +35,11 @@ public class ProductController {
         return productService.getAllProducts(pageable);
     }
 
+    @GetMapping("/{id}")
+    public ProductResponse show(@PathVariable Long id) {
+        return productService.getById(id);
+    }
+
     @PostMapping
     public ResponseEntity<ProductResponse> create(@RequestBody @Valid ProductRequest request) {
         return ResponseEntity.status(201).body(productService.create(request));

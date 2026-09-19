@@ -28,6 +28,13 @@ public class ProductService {
                 .map(ProductResponse::fromEntity);
     }
 
+    @Transactional(readOnly = true)
+    public ProductResponse getById(Long id) {
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("product", id));
+        return ProductResponse.fromEntity(product);
+    }
+
     @Transactional
     public ProductResponse create(ProductRequest request) {
         Category category = categoryRepository.findById(request.getCategoryId())

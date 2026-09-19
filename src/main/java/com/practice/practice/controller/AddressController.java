@@ -42,8 +42,8 @@ public class AddressController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Address> update(Long id, @RequestBody @Valid UpdateAddressRequest request) {
-        return ResponseEntity.status(201).body(addressService.updateAddress(id, request));
+    public ResponseEntity<Address> update(@PathVariable Long id, @RequestBody @Valid UpdateAddressRequest request) {
+        return ResponseEntity.ok(addressService.updateAddress(id, request));
     }
 
     @DeleteMapping("/{id}")
