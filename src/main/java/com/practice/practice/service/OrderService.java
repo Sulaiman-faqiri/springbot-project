@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.practice.practice.dto.OrderItemRequest;
 import com.practice.practice.dto.OrderRequest;
 import com.practice.practice.dto.OrderResponse;
+import com.practice.practice.dto.OrderStatusRequest;
 import com.practice.practice.exception.ApiException;
 import com.practice.practice.exception.ResourceNotFoundException;
 import com.practice.practice.model.Order;
@@ -70,6 +71,20 @@ public class OrderService {
 
     }
 
+    @Transactional
+    public OrderResponse cancelOrder(Long id, OrderStatusRequest request) {
+        Order order = findOrder(id);
+        checkTransition(order.getStatus(), request.getStatus());
+
+        order.setStatus(OrderStatus.CANCELLED);
+        for (OrderItem orderItem : order.getItems()) {
+            Product product =orderItem.getProduct();
+            product.setStockQty(product.getStockQty() + orderItem.getQty());
+        }
+        return OrderResponse.fromEntity(order);
+
+    }
+
     @Transactional(readOnly = true)
     public OrderResponse getById(Long id) {
         return OrderResponse.fromEntity(findOrder(id));
@@ -80,9 +95,31 @@ public class OrderService {
         orderRepository.delete(findOrder(id));
     }
 
+    @Transactional
+    public OrderResponse updateStatus(Long id, OrderStatusRequest request) {
+        Order order = findOrder(id);
+        checkTransition(order.getStatus(), request.getStatus());
+        order.setStatus(request.getStatus());
+
+        return OrderResponse.fromEntity(order);
+
+    }
+
     private Order findOrder(Long id) {
         return orderRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("order", id));
+    }
+
+    private void checkTransition(OrderStatus from, OrderStatus to) {
+        boolean allowed = switch (from) {
+            case PENDING -> to == OrderStatus.PAID || to == OrderStatus.CANCELLED;
+            case PAID -> to == OrderStatus.SHIPPED || to == OrderStatus.CANCELLED;
+            case SHIPPED -> to == OrderStatus.DELIVERED;
+            case DELIVERED, CANCELLED -> false;
+        };
+        if (!allowed) {
+            throw new ApiException(HttpStatus.CONFLICT, "cannot change status from " + from + " to " + to);
+        }
     }
 
 }

@@ -8,12 +8,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.practice.practice.dto.OrderRequest;
 import com.practice.practice.dto.OrderResponse;
+import com.practice.practice.dto.OrderStatusRequest;
 import com.practice.practice.model.OrderStatus;
 import com.practice.practice.service.OrderService;
 
@@ -46,6 +48,18 @@ public class OrderController {
     @PostMapping
     public ResponseEntity<OrderResponse> create(@RequestBody @Valid OrderRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(orderService.create(request));
+    }
+
+    @PatchMapping("/{id}/status")
+    public OrderResponse updateStatus(@PathVariable Long id, @RequestBody @Valid OrderStatusRequest request) {
+        return orderService.updateStatus(id, request);
+
+    }
+
+    @PatchMapping("/{id}/cancel")
+    public OrderResponse cancelOrder(@PathVariable Long id, @RequestBody @Valid OrderStatusRequest request) {
+        return orderService.cancelOrder(id, request);
+
     }
 
     @DeleteMapping("/{id}")
