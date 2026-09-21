@@ -2,14 +2,17 @@ package com.practice.practice.service;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.practice.practice.dto.CategoryRequest;
+import com.practice.practice.exception.ApiException;
 import com.practice.practice.exception.DuplicateResourceException;
 import com.practice.practice.exception.ResourceNotFoundException;
 import com.practice.practice.model.Category;
 import com.practice.practice.repository.CategoryRepository;
+import com.practice.practice.repository.ProductRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -18,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 public class CategoryService {
 
     private final CategoryRepository categoryRepository;
+    private final ProductRepository productRepository;
 
     @Transactional(readOnly = true)
     public Page<Category> getAllCategories(Pageable pageable) {
@@ -55,7 +59,14 @@ public class CategoryService {
 
     @Transactional
     public void delete(Long id) {
-        categoryRepository.delete(getById(id));
+        Category category = getById(id);
+
+        if (productRepository.existsByCategoryId(id)) {
+            throw new ApiException(HttpStatus.CONFLICT,
+                    "category " + category.getName() + " still has products and cannot be deleted");
+        }
+
+        categoryRepository.delete(category);
     }
 
 }

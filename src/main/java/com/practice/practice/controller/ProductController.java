@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @AllArgsConstructor
 @RestController
@@ -30,9 +31,11 @@ public class ProductController {
 
     @GetMapping
     public Page<ProductResponse> index(
+            @RequestParam(required = false) Long categoryId,
+            @RequestParam(required = false) String name,
             @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.ASC) Pageable pageable) {
 
-        return productService.getAllProducts(pageable);
+        return productService.getAllProducts(categoryId, name, pageable);
     }
 
     @GetMapping("/{id}")

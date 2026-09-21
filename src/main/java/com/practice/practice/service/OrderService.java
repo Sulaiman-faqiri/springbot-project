@@ -33,8 +33,8 @@ public class OrderService {
     private final ProductRepository productRepository;
 
     @Transactional(readOnly = true)
-    public Page<OrderResponse> getAllOrders(Pageable pageable) {
-        return orderRepository.findAll(pageable)
+    public Page<OrderResponse> getAllOrders(Long userId, OrderStatus status, Pageable pageable) {
+        return orderRepository.search(userId, status, pageable)
                 .map(OrderResponse::fromEntity);
     }
 

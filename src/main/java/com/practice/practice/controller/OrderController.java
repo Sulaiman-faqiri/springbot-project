@@ -14,12 +14,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.practice.practice.dto.OrderRequest;
 import com.practice.practice.dto.OrderResponse;
+import com.practice.practice.model.OrderStatus;
 import com.practice.practice.service.OrderService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @RequiredArgsConstructor
 @RestController
@@ -30,8 +32,10 @@ public class OrderController {
 
     @GetMapping
     public Page<OrderResponse> index(
+            @RequestParam(required = false) Long userId,
+            @RequestParam(required = false) OrderStatus status,
             @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
-        return orderService.getAllOrders(pageable);
+        return orderService.getAllOrders(userId, status, pageable);
     }
 
     @GetMapping("/{id}")

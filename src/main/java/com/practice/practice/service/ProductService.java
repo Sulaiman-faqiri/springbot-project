@@ -2,15 +2,18 @@ package com.practice.practice.service;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.practice.practice.dto.ProductRequest;
 import com.practice.practice.dto.ProductResponse;
+import com.practice.practice.exception.ApiException;
 import com.practice.practice.exception.ResourceNotFoundException;
 import com.practice.practice.model.Category;
 import com.practice.practice.model.Product;
 import com.practice.practice.repository.CategoryRepository;
+import com.practice.practice.repository.OrderItemRepository;
 import com.practice.practice.repository.ProductRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -21,10 +24,11 @@ public class ProductService {
 
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
+    private final OrderItemRepository orderItemRepository;
 
     @Transactional(readOnly = true)
-    public Page<ProductResponse> getAllProducts(Pageable pageable) {
-        return productRepository.findAll(pageable)
+    public Page<ProductResponse> getAllProducts(Long categoryId, String name, Pageable pageable) {
+        return productRepository.search(categoryId, name, pageable)
                 .map(ProductResponse::fromEntity);
     }
 
@@ -70,10 +74,15 @@ public class ProductService {
 
     @Transactional
     public void delete(Long id) {
-        productRepository.findById(id)
+        Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("product", id));
 
-        productRepository.deleteById(id);
+        if (orderItemRepository.existsByProductId(id)) {
+            throw new ApiException(HttpStatus.CONFLICT,
+                    "product " + product.getName() + " is used by existing orders and cannot be deleted");
+        }
+
+        productRepository.delete(product);
 
     }
 
